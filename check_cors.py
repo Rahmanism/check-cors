@@ -42,14 +42,35 @@ def get_headers(url, method="OPTIONS", show_headers=False):
   except Exception as err:
     print("General Failure: ", err)
 
+def show_help():
+  print("Usage: check_cors.py [domain] [--headers]")
 
 domain = "https://example.com"
-if len(sys.argv) > 1:
-  domain = sys.argv[1]
-print(f"Domain: {domain}")
+show_headers = False
+HEADERS='--headers'
+if "-h" in sys.argv or "--help" in sys.argv:
+  show_help()
+  sys.exit(0)
+if len(sys.argv) == 2:
+  if HEADERS in sys.argv:
+    show_headers = True
+  else:
+    domain = sys.argv[1]
+elif len(sys.argv) > 2:
+  if HEADERS in sys.argv:
+    show_headers = True
+  if sys.argv[1] != HEADERS:
+    domain = sys.argv[1]
+  else:
+    domain = sys.argv[2]
+    
+if not domain.startswith("http"):
+  domain = "https://" + domain
+  
+print(f"Domain: {domain}\n")
 
 methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS']
 for method in methods:
   print(f"Method: {method}")
-  get_headers(domain, method)
+  get_headers(domain, method, show_headers)
   print("\n")
